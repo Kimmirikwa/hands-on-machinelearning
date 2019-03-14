@@ -9,7 +9,7 @@ import pandas as pd
 import sklearn
 
 def prepare_country_stats(oecd_bli, gdp_per_capita):
-	'''merges the 2 dataframes'''
+    '''merges the 2 dataframes'''
     oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
     # pivoting the table will reshape it
     oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
@@ -33,5 +33,9 @@ gdp_per_capita = pd.read_csv('data/gdp_per_capita.csv', thousands=',', delimiter
 # merge the 2 dataframes for each row to have data of a particular country
 country_stats = prepare_country_stats(oecd_bli, gdp_per_capita)
 
-X = np.c_[country_stats["GDP per capita"]]
-y = np.c_[country_stats["Life satisfaction"]]
+X = np.c_[country_stats["GDP per capita"]]  # training features
+y = np.c_[country_stats["Life satisfaction"]]  # target variable
+
+# scatter plot of X and y
+country_stats.plot(kind='scatter', x="GDP per capita", y="Life satisfaction")
+plt.show()
