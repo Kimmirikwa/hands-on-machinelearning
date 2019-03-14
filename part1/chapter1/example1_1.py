@@ -11,9 +11,12 @@ import sklearn
 def prepare_country_stats(oecd_bli, gdp_per_capita):
 	'''merges the 2 dataframes'''
     oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
+    # pivoting the table will reshape it
     oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
     gdp_per_capita.rename(columns={"2015": "GDP per capita"}, inplace=True)
     gdp_per_capita.set_index("Country", inplace=True)
+    # merge the dataframes on the Index - "Country" i.e, rows belonging to the
+    # same country from the 2 dataframes will form 1 row in the new merge dataframe
     full_country_stats = pd.merge(left=oecd_bli, right=gdp_per_capita,
                                   left_index=True, right_index=True)
     full_country_stats.sort_values(by="GDP per capita", inplace=True)
