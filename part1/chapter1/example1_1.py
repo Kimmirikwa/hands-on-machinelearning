@@ -6,7 +6,7 @@ import matplotlib  # for plotting 2D figures
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
+from sklearn.linear_model import LinearRegression
 
 def prepare_country_stats(oecd_bli, gdp_per_capita):
     '''merges the 2 dataframes'''
@@ -39,3 +39,11 @@ y = np.c_[country_stats["Life satisfaction"]]  # target variable
 # scatter plot of X and y
 country_stats.plot(kind='scatter', x="GDP per capita", y="Life satisfaction")
 plt.show()
+
+# use linearregression model to train and predict
+linear_reg = LinearRegression()
+
+linear_reg.fit(X, y)
+
+# predict satisfaction for cyprus with 22587 as per capita GDP
+print(linear_reg.predict([[22587]]))
