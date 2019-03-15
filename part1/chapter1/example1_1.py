@@ -1,5 +1,6 @@
 # this involves reading the data, preparing it, visualizing, training a model and using it to 
 # make a prediction
+# the model will be simple and will only use one training feature.
 
 # the necessary imports
 import matplotlib  # for plotting 2D figures
