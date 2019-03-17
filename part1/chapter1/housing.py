@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedShuffleSplit
 from pandas.tools.plotting import scatter_matrix
+from sklearn.preprocessing import Imputer
+from sklearn.preprocessing import LabelBinarizer
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = "datasets/housing"
@@ -79,3 +81,27 @@ corr_matrix = housing.corr()
 attributes = ["median_house_value", "median_income", "total_rooms", "housing_median_age"]
 scatter_matrix(housing[attributes], figsize=(12, 8))
 plt.show()
+
+# prepare data for ML algorithms
+# we are going to work with training features only
+housing = train_set.drop("median_house_value", axis=1)
+housing_labels = train_set["median_house_value"].copy()
+
+# 1. Data cleaning
+# missing values is common in data. This needs to be handled well as most ML algorithms do not work with missing values
+# we can drop the examples(rows) or the features(columns) or fill the missing data points with some value eg mean, median, mode
+
+# 1a. numerical values
+# we will use sklearn's Imputer class instance to fill missing  values with the median
+imputer = Imputer(strategy='median')
+
+# all training features except ocean_proximity are numerical
+housing_num = housing.drop('ocean_proximity', axis=1)
+X = imputer.fit_transform(housing_num)
+housing_tr = pd.DataFrame(X, columns=housing_num.columns)  # the transformed dataset, there is no numerical with a missing value
+
+# 1b. handling text and categorical features
+ocean_proximity_dummies = pd.get_dummies(housing['ocean_proximity'])
+
+# combine the 2 dataframes
+housing_tr = pd.concat([housing_tr, ocean_proximity_dummies])
