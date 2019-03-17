@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedShuffleSplit
+from pandas.tools.plotting import scatter_matrix
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = "datasets/housing"
@@ -55,4 +56,26 @@ for set in (train_set, test_set):
 	set.drop(['income_cat'], axis=1, inplace=True)
 
 # data exploration
+# we will only work on a copy the train set to avoid tampering with the data
+housing = train_set.copy()
 
+# 1. geographical data i.e latitude and longitude
+# will plot a scatter plot with alpha = 0.4 to enable us see high density areas
+# the scatter plot shows a high correlation between house prices and the location and pupulation density
+housing.plot(kind='scatter', x='latitude', y='longitude', alpha=0.4, s=housing['population']/100,
+	label='population', c='median_house_value', cmap=plt.get_cmap('jet'), colorbar=True)
+plt.show()
+
+# the correlation of the features is calculated by .corr() method
+# the correlation values range between 1 and -1, with a positive value indication positive correlation
+# and negetive value indication negative correlation of particular magnitude. For example, a value of +1
+# shows that the features increase with same proportion. A value of 0 shows that there is no correlation between
+# the features. However, correlation does not capture non-linear relationships
+corr_matrix = housing.corr()
+
+# panda's scatter_matrix can be used to show the correlation values graphically
+# due to space, we are going to show the the scatter matrix of a few features, since with 11
+# features we will have 121 plots
+attributes = ["median_house_value", "median_income", "total_rooms", "housing_median_age"]
+scatter_matrix(housing[attributes], figsize=(12, 8))
+plt.show()
