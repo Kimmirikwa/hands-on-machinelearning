@@ -8,6 +8,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from pandas.tools.plotting import scatter_matrix
 from sklearn.preprocessing import Imputer
 from sklearn.preprocessing import LabelBinarizer
+from utils import CombinedAttributesAdder
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = "datasets/housing"
