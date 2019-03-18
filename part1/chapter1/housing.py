@@ -11,6 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import mean_squared_error
 
 from utils import DataFrameSelector, CombinedAttributesAdder, CustomLabelBinarizer	
 
@@ -139,3 +140,18 @@ grid_search = GridSearchCV(forest_reg, param_grid, cv=5, scoring='neg_mean_squar
 grid_search.fit(housing_prepared, housing_labels)  # train the model using data
 
 
+# evaluating the model
+# the best model selected above will be evaluated using the test set
+final_model = grid_search.best_estimator_  # the best model i.e with best hyperparameters
+
+# the test dataset
+X_test = test_set.drop("median_house_value", axis=1)
+y_test = test_set["median_house_value"].copy()
+
+# we only transform the data, we do not fit it!
+X_test_prepared = full_pipeline.transform(X_test)
+
+final_predictions = final_model.predict(X_test_prepared)
+
+final_mse = mean_squared_error(y_test, final_predictions)
+final_rmse = np.sqrt(final_mse)
