@@ -13,7 +13,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
 
-from utils import DataFrameSelector, CombinedAttributesAdder, CustomLabelBinarizer	
+from utils import DataFrameSelector, CombinedAttributesAdder, CustomLabelBinarizer
+from data import get_data	
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = "datasets/housing"
@@ -43,7 +44,7 @@ def load_housing_data(housing_path=HOUSING_PATH):
 	return pd.read_csv(csv_path)
 
 # loading the data
-housing = load_housing_data()
+housing = get_data()
 
 # we need to split the dataset into training and testing set to prevent the algorithm
 # overfitting. Random sampling works fine for datasets with many examples
