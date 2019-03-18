@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedShuffleSplit
 from pandas.tools.plotting import scatter_matrix
 from sklearn.preprocessing import Imputer
-from sklearn.preprocessing import LabelBinarizer
-from utils import CombinedAttributesAdder
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline, FeatureUnion
+
+from utils import DataFrameSelector, CombinedAttributesAdder, CustomLabelBinarizer	
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = "datasets/housing"
@@ -88,21 +90,30 @@ plt.show()
 housing = train_set.drop("median_house_value", axis=1)
 housing_labels = train_set["median_house_value"].copy()
 
-# 1. Data cleaning
-# missing values is common in data. This needs to be handled well as most ML algorithms do not work with missing values
-# we can drop the examples(rows) or the features(columns) or fill the missing data points with some value eg mean, median, mode
+# we are going to use pipelines to data data cleaning and feature extraction
 
-# 1a. numerical values
+# numerical values
 # we will use sklearn's Imputer class instance to fill missing  values with the median
 imputer = Imputer(strategy='median')
 
-# all training features except ocean_proximity are numerical
-housing_num = housing.drop('ocean_proximity', axis=1)
-X = imputer.fit_transform(housing_num)
-housing_tr = pd.DataFrame(X, columns=housing_num.columns)  # the transformed dataset, there is no numerical with a missing value
+num_attribs = housing.drop("ocean_proximity", axis=1).columns
 
-# 1b. handling text and categorical features
-ocean_proximity_dummies = pd.get_dummies(housing['ocean_proximity'])
+num_pipeline = Pipeline([
+	('selector', DataFrameSelector(num_attribs)),  # select numerical attributes
+	('imputer', Imputer(strategy='median')),  # fill missing values with mean
+	('attribs_adder', CombinedAttributesAdder()),  # add more attributes
+	('scaler', StandardScaler())])  # scale the features using feature scaling
 
-# combine the 2 dataframes
-housing_tr = pd.concat([housing_tr, ocean_proximity_dummies])
+# categorical values
+cat_attribs = ["ocean_proximity"]
+
+cat_pipeline = Pipeline([
+	('selector', DataFrameSelector(cat_attribs)),
+	('label_binarizer', CustomLabelBinarizer())])  # transforms from text categories to integer categories, then from integer categories to one-hot vectors
+
+# we then use FeatureUnion to run the 2 pipeliens above in parallel and the concatenate their results
+full_pipeline = FeatureUnion(transformer_list=[
+	('num_pipeline', num_pipeline),
+	('cat_pipeline', cat_pipeline)])
+
+housing_prepared = full_pipeline.fit_transform(housing)
