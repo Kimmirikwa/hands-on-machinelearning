@@ -9,6 +9,8 @@ from pandas.tools.plotting import scatter_matrix
 from sklearn.preprocessing import Imputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
 
 from utils import DataFrameSelector, CombinedAttributesAdder, CustomLabelBinarizer	
 
@@ -117,3 +119,23 @@ full_pipeline = FeatureUnion(transformer_list=[
 	('cat_pipeline', cat_pipeline)])
 
 housing_prepared = full_pipeline.fit_transform(housing)
+
+# we are going to use RandomForestRegressor model
+
+# hyperparameter to be tried
+param_grid = [
+	{'n_estimators': [3, 10, 30], 'max_features': [2, 4, 6, 8]},
+	{'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
+]
+
+forest_reg = RandomForestRegressor()
+
+# grid search to select the best params
+# all the possible param combinations will be tried and the best combination will be selected
+# from the hyperparameter settings, forest_reg will be trained ((3 * 4) + (2 * 3)) * 5 = 90 times!
+# to avoid running all the combinations, RandomizedGridSearch can be used
+grid_search = GridSearchCV(forest_reg, param_grid, cv=5, scoring='neg_mean_squared_error')  # will through all the params and select the best params
+
+grid_search.fit(housing_prepared, housing_labels)  # train the model using data
+
+
