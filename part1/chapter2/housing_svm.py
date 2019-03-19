@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import StandardScaler, Imputer
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.svm import SVR
 
 from data_utils import get_data, split_data
 from utils import DataFrameSelector, CombinedAttributesAdder, CustomLabelBinarizer
@@ -39,6 +41,18 @@ categorical_pipeline = Pipeline([
 	('label_binarizer', CustomLabelBinarizer())])
 
 # FeatureUnion to combine the 2 pipelines above in parallel
-full_dataprep_pipeline = FeatureUnion(trandformer_list=[
+full_dataprep_pipeline = FeatureUnion(transformer_list=[
 	('numerical_pipeline', numerical_pipeline),
 	('categorical_pipeline', categorical_pipeline)])
+
+# adding the training model, SVR from sklearn.svm
+
+param_grid = {
+	'kernel': ['linear', 'rbf'],
+	'C': [1.0, 2.0, 3.0, 4.0, 5.0],
+	'gamma': [1.0, 2.0, 3.0, 4.0, 5.0]
+}
+
+svm = SVR()
+
+randomized_search = RandomizedSearchCV(svm, param_grid, cv=5, scoring='neg_mean_squared_error')
