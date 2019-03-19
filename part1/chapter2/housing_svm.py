@@ -25,7 +25,7 @@ housing_labels = train_set["median_house_value"].copy()
 # data preparation and prediction going to be done in a pipeline
 
 # pipeline to preprocess numerical features
-numerical_attributes = housing.drop('ocean_proximity', axis=1).columns
+numerical_attributes = housing.drop(['ocean_proximity', 'median_house_value'], axis=1).columns
 
 numerical_pipeline = Pipeline([
 	('selector', DataFrameSelector(numerical_attributes)),
@@ -33,17 +33,23 @@ numerical_pipeline = Pipeline([
 	('attrs_addeder', CombinedAttributesAdder()),
 	('scaler', StandardScaler())])
 
-# pipine to preprocess categorical features
+# pipeline to preprocess categorical features
 categorical_attribute = ["ocean_proximity"]
 
 categorical_pipeline = Pipeline([
 	('selector', DataFrameSelector(categorical_attribute)),
 	('label_binarizer', CustomLabelBinarizer())])
 
+# get the labels of the dataset
+housing_labels = ["median_house_value"]
+label_pipeline = Pipeline([
+	('labels', DataFrameSelector(housing_labels))])
+
 # FeatureUnion to combine the 2 pipelines above in parallel
 full_dataprep_pipeline = FeatureUnion(transformer_list=[
 	('numerical_pipeline', numerical_pipeline),
-	('categorical_pipeline', categorical_pipeline)])
+	('categorical_pipeline', categorical_pipeline),
+	('label_pipeline', label_pipeline)])
 
 # adding the training model, SVR from sklearn.svm
 
