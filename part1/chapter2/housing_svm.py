@@ -4,7 +4,7 @@
 '''
 import pandas as pd
 import numpy as np
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import StandardScaler, Imputer
 
 from data_utils import get_data, split_data
@@ -37,3 +37,8 @@ categorical_attribute = ["ocean_proximity"]
 categorical_pipeline = Pipeline([
 	('selector', DataFrameSelector(categorical_attribute)),
 	('label_binarizer', CustomLabelBinarizer())])
+
+# FeatureUnion to combine the 2 pipelines above in parallel
+full_dataprep_pipeline = FeatureUnion(trandformer_list=[
+	('numerical_pipeline', numerical_pipeline),
+	('categorical_pipeline', categorical_pipeline)])
