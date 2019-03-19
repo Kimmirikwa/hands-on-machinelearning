@@ -21,6 +21,8 @@ housing = train_set.drop("median_house_value", axis=1)
 housing_labels = train_set["median_house_value"].copy()
 
 # data preparation and prediction going to be done in a pipeline
+
+# pipeline to preprocess numerical features
 numerical_attributes = housing.drop('ocean_proximity', axis=1).columns
 
 numerical_pipeline = Pipeline([
@@ -28,3 +30,10 @@ numerical_pipeline = Pipeline([
 	('imputer', Imputer(strategy='median')),
 	('attrs_addeder', CombinedAttributesAdder()),
 	('scaler', StandardScaler())])
+
+# pipine to preprocess categorical features
+categorical_attribute = ["ocean_proximity"]
+
+categorical_pipeline = Pipeline([
+	('selector', DataFrameSelector(categorical_attribute)),
+	('label_binarizer', CustomLabelBinarizer())])
