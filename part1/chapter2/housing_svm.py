@@ -4,8 +4,11 @@
 '''
 import pandas as pd
 import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, Imputer
 
 from data_utils import get_data, split_data
+from utils import DataFrameSelector, CombinedAttributesAdder, CustomLabelBinarizer
 
 # laoding the dataset
 housing = get_data()
@@ -16,3 +19,12 @@ train_set, test_set = split_data(housing)
 # get feature vectors and label vector
 housing = train_set.drop("median_house_value", axis=1)
 housing_labels = train_set["median_house_value"].copy()
+
+# data preparation and prediction going to be done in a pipeline
+numerical_attributes = housing.drop('ocean_proximity', axis=1).columns
+
+numerical_pipeline = Pipeline([
+	('selector', DataFrameSelector(numerical_attributes)),
+	('imputer', Imputer(strategy='median')),
+	('attrs_addeder', CombinedAttributesAdder()),
+	('scaler', StandardScaler())])

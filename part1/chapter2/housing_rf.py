@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas.tools.plotting import scatter_matrix
-from sklearn.preprocessing import Imputer
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, Imputer
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
@@ -57,8 +56,6 @@ housing_labels = train_set["median_house_value"].copy()
 
 # numerical values
 # we will use sklearn's Imputer class instance to fill missing  values with the median
-imputer = Imputer(strategy='median')
-
 num_attribs = housing.drop("ocean_proximity", axis=1).columns
 
 num_pipeline = Pipeline([
