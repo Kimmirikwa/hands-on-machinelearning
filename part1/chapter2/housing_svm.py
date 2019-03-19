@@ -18,14 +18,13 @@ housing = get_data()
 # split into train_set and test_set
 train_set, test_set = split_data(housing)
 
-# get feature vectors and label vector
 housing = train_set.drop("median_house_value", axis=1)
-housing_labels = train_set["median_house_value"].copy()
+housing_data_labels = train_set["median_house_value"].copy()
 
 # data preparation and prediction going to be done in a pipeline
 
 # pipeline to preprocess numerical features
-numerical_attributes = housing.drop(['ocean_proximity', 'median_house_value'], axis=1).columns
+numerical_attributes = train_set.drop(['ocean_proximity', 'median_house_value'], axis=1).columns
 
 numerical_pipeline = Pipeline([
 	('selector', DataFrameSelector(numerical_attributes)),
@@ -48,10 +47,10 @@ label_pipeline = Pipeline([
 # FeatureUnion to combine the 2 pipelines above in parallel
 full_dataprep_pipeline = FeatureUnion(transformer_list=[
 	('numerical_pipeline', numerical_pipeline),
-	('categorical_pipeline', categorical_pipeline),
-	('label_pipeline', label_pipeline)])
+	('categorical_pipeline', categorical_pipeline)])
 
 # adding the training model, SVR from sklearn.svm
+prepared_data = full_dataprep_pipeline.fit_transform(housing)
 
 param_grid = {
 	'kernel': ['linear', 'rbf'],
@@ -62,3 +61,5 @@ param_grid = {
 svm = SVR()
 
 randomized_search = RandomizedSearchCV(svm, param_grid, cv=5, scoring='neg_mean_squared_error')
+
+randomized_search.fit(prepared_data, housing_data_labels)

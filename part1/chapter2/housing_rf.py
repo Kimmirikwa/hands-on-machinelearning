@@ -94,6 +94,9 @@ forest_reg = RandomForestRegressor()
 # to avoid running all the combinations, RandomizedGridSearch can be used
 grid_search = GridSearchCV(forest_reg, param_grid, cv=5, scoring='neg_mean_squared_error')  # will through all the params and select the best params
 
+print("The shape of the labels>>>>")
+print(housing_labels.shape)
+
 grid_search.fit(housing_prepared, housing_labels)  # train the model using data
 
 
