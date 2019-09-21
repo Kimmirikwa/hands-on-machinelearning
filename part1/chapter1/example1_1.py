@@ -10,7 +10,10 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 
 def prepare_country_stats(oecd_bli, gdp_per_capita):
-    '''merges the 2 dataframes'''
+    '''
+        merges the 2 dataframes
+        return one dataset with "Country" as the index and only 2 columns i.e "GDP per capita" and "Life satisfaction"
+    '''
     oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
     # pivoting the table will reshape it refer here: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.pivot.html
     oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
@@ -22,7 +25,6 @@ def prepare_country_stats(oecd_bli, gdp_per_capita):
     # same country from the 2 dataframes will form 1 row in the new merge dataframe
     full_country_stats = pd.merge(left=oecd_bli, right=gdp_per_capita,
                                   left_index=True, right_index=True)
-    full_country_stats.sort_values(by="GDP per capita", inplace=True)
     return full_country_stats[["GDP per capita", 'Life satisfaction']]
 
 # load the data. The data will be held in pandas dataframes
