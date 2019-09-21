@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 def prepare_country_stats(oecd_bli, gdp_per_capita):
     '''merges the 2 dataframes'''
     oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
-    # pivoting the table will reshape it
+    # pivoting the table will reshape it refer here: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.pivot.html
     oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
     gdp_per_capita.rename(columns={"2015": "GDP per capita"}, inplace=True)
     gdp_per_capita.set_index("Country", inplace=True)
@@ -27,14 +27,14 @@ def prepare_country_stats(oecd_bli, gdp_per_capita):
 
 # load the data. The data will be held in pandas dataframes
 # for more information on pandas dataframes: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html
-oecd_bli = pd.read_csv('data/oecd_bli_2015.csv', thousands=',')
-gdp_per_capita = pd.read_csv('data/gdp_per_capita.csv', thousands=',', delimiter='\t',
+oecd_bli = pd.read_csv('datasets/oecd_bli_2015.csv', thousands=',')
+gdp_per_capita = pd.read_csv('datasets/gdp_per_capita.csv', thousands=',', delimiter='\t',
 	encoding='latin1', na_values='n/a')
 
 # merge the 2 dataframes for each row to have data of a particular country
 country_stats = prepare_country_stats(oecd_bli, gdp_per_capita)
 
-X = np.c_[country_stats["GDP per capita"]]  # training features
+X = np.c_[country_stats["GDP per capita"]]  # training feature
 y = np.c_[country_stats["Life satisfaction"]]  # target variable
 
 # scatter plot of X and y
