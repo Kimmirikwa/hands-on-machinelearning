@@ -42,7 +42,8 @@ def get_data():
 	return load_housing_data()
 
 def split_data(housing):
-	# use income_cat to do stratified sampling
+	# use income_cat to do stratified sampling, this will ensure our train and test sets have income
+	# distributions similar to the original data
 	# we will have five income_cat 1.0 to 5.0
 	housing['income_cat'] = np.ceil(housing['median_income'] / 1.5)  # we will have fewer categories of median income
 	housing['income_cat'].where(housing['income_cat'] < 5, 5.0, inplace=True)  # assign all categories from 5 and above to category 5
