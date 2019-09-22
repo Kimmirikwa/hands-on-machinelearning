@@ -17,7 +17,8 @@ HOUSING_URL = DOWNLOAD_ROOT + HOUSING_PATH + "/housing.tgz"
 # fetching data this way is very impoortant especially if the data changes so much
 def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
 	'''
-		Tries to create the directory if not present
+		Tries to create datasets/housing directory if it does not exist
+		downloads the housing file, this ensures we get an updates on the data
 		reads the file and extracts it
 	'''
 	if not os.path.isdir(housing_path):  # create the directory if it not yet created
@@ -31,7 +32,7 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
 # function to load the data in housing.csv file
 def load_housing_data(housing_path=HOUSING_PATH):
 	csv_path = os.path.join(housing_path, "housing.csv")
-	return pd.read_csv(csv_path)
+	return pd.read_csv(csv_path)  # returns a dataframe
 
 
 def get_data():
@@ -41,6 +42,8 @@ def get_data():
 	return load_housing_data()
 
 def split_data(housing):
+	# use income_cat to do stratified sampling
+	# we will have five income_cat 1.0 to 5.0
 	housing['income_cat'] = np.ceil(housing['median_income'] / 1.5)  # we will have fewer categories of median income
 	housing['income_cat'].where(housing['income_cat'] < 5, 5.0, inplace=True)  # assign all categories from 5 and above to category 5
 
