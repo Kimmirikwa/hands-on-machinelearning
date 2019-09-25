@@ -86,12 +86,14 @@ param_grid = [
 	{'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
 ]
 
+print("training the model")
+
 forest_reg = RandomForestRegressor()
 
 # grid search to select the best params
 # all the possible param combinations will be tried and the best combination will be selected
 # from the hyperparameter settings, forest_reg will be trained ((3 * 4) + (2 * 3)) * 5 = 90 times!
-# to avoid running all the combinations, RandomizedGridSearch can be used
+# to avoid running all the combinations, RandomizedSearch can be used
 grid_search = GridSearchCV(forest_reg, param_grid, cv=5, scoring='neg_mean_squared_error')  # will through all the params and select the best params
 
 print("The shape of the labels>>>>")
