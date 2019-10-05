@@ -1,5 +1,8 @@
 from sklearn.datasets import fetch_openml  # will be used to fetch data
 import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
 
 # get the data
 mnist = fetch_openml("mnist_784")  # fetch MNIST data using the dateset id
@@ -18,3 +21,13 @@ X_train, X_test, y_train, y_test = X[:60000], X[60000:], y[:60000], y[60000:]
 # 2. to reduce sensitivity of some algorithms to the order of the data
 shuffle_index = np.random.permutation(60000)
 X_train, y_train = X_train[shuffle_index], y_train[shuffle_index]
+
+param_grid = [{'weights': ["uniform", "distance"], 'n_neighbors': [3, 4, 5]}]  # this will lead to 2 * 3 = 6 models
+
+classifier = KNeighborsClassifier()
+# will run the models in parallel
+# with cv=5, wel will have a total of 6 * 5 = 30 models
+grid_search = GridSearchCV(classifier, param_grid, cv=5, verbose=3, n_jobs=-1) 
+grid_search.fit(X_train, y_train)
+y_pred = grid_search.predict(X_test)
+print(accuracy_score(y_test, y_pred))
