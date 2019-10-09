@@ -4,6 +4,7 @@ from six.moves import urllib
 import email.policy
 from email.parser import BytesParser
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 import numpy as np
 
 from utils import EmailToWordCounterTransformer
@@ -47,3 +48,8 @@ X = np.array(spam_emails + ham_emails)
 y = np.array([1] * len(spam_emails) + [0] * len(ham_emails))  # label for spam is '1' and '0' for non-spam
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+preprocess_pipeline = Pipeline([
+	("email_to_wordcount", EmailToWordCounterTransformer())])
+
+X_train_trandformed = preprocess_pipeline.fit_transform(X_train)

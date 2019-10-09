@@ -1,4 +1,7 @@
 import re
+import urlextract
+import nltk
+from collections import Counter
 from sklearn.base import BaseEstimator, TransformerMixin
 from html import unescape
 import numpy as np
@@ -41,28 +44,30 @@ class EmailToWordCounterTransformer(BaseEstimator, TransformerMixin):
 	def fit(self, X, y=None):
 		return self
 
-	def transform(self):
-		X_tranformed = []  # will contain the counts of words in emails
+	def transform(self, X, y=None):
+		X_transformed = []  # will contain the counts of words in emails
 		for email in X:
 			text = email_to_text(email) or ""
 			if self.lower_case:
 				text = text.lower()
-			if self.replace_urls and url_extractor is not None:
-			    urls = list(set(url_extractor.find_urls(text)))
-			    urls.sort(key=lambda url: len(url), reverse=True)
-			    for url in urls:
-			        text = text.replace(url, " URL ")
+			if self.replace_urls:
+				url_extractor = urlextract.URLExtract()
+				urls = list(set(url_extractor.find_urls(text)))
+				urls.sort(key=lambda url: len(url), reverse=True)
+				for url in urls:
+				    text = text.replace(url, " URL ")
 			if self.replace_numbers:
 			    text = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', 'NUMBER', text)
 			if self.remove_punctuation:
 			    text = re.sub(r'\W+', ' ', text, flags=re.M)
 			word_counts = Counter(text.split())
-			if self.stemming and stemmer is not None:
-			    stemmed_word_counts = Counter()
-			    for word, count in word_counts.items():
-			        stemmed_word = stemmer.stem(word)
-			        stemmed_word_counts[stemmed_word] += count
-			    word_counts = stemmed_word_counts
+			if self.stemming:
+				stemmer = nltk.PorterStemmer()
+				stemmed_word_counts = Counter()
+				for word, count in word_counts.items():
+				    stemmed_word = stemmer.stem(word)
+				    stemmed_word_counts[stemmed_word] += count
+				word_counts = stemmed_word_counts
 			X_transformed.append(word_counts)
 
 		return np.array(X_transformed)
