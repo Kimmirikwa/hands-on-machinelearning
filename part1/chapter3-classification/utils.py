@@ -6,10 +6,10 @@ import numpy as np
 def html_to_plain_text(html):
 	# will remove some tags and replace others
 	text = re.sub('<head.*?>.*?</head>', '', html, flags=re.M | re.S | re.I)
-    text = re.sub('<a\s.*?>', ' HYPERLINK ', text, flags=re.M | re.S | re.I)
-    text = re.sub('<.*?>', '', text, flags=re.M | re.S)
-    text = re.sub(r'(\s*\n)+', '\n', text, flags=re.M | re.S)
-    return unescape(text)
+	text = re.sub('<a\s.*?>', ' HYPERLINK ', text, flags=re.M | re.S | re.I)
+	text = re.sub('<.*?>', '', text, flags=re.M | re.S)
+	text = re.sub(r'(\s*\n)+', '\n', text, flags=re.M | re.S)
+	return unescape(text)
 
 def email_to_text(email):
 	html = None
@@ -45,24 +45,24 @@ class EmailToWordCounterTransformer(BaseEstimator, TransformerMixin):
 		X_tranformed = []  # will contain the counts of words in emails
 		for email in X:
 			text = email_to_text(email) or ""
-            if self.lower_case:
-                text = text.lower()
-            if self.replace_urls and url_extractor is not None:
-                urls = list(set(url_extractor.find_urls(text)))
-                urls.sort(key=lambda url: len(url), reverse=True)
-                for url in urls:
-                    text = text.replace(url, " URL ")
-            if self.replace_numbers:
-                text = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', 'NUMBER', text)
-            if self.remove_punctuation:
-                text = re.sub(r'\W+', ' ', text, flags=re.M)
-            word_counts = Counter(text.split())
-            if self.stemming and stemmer is not None:
-                stemmed_word_counts = Counter()
-                for word, count in word_counts.items():
-                    stemmed_word = stemmer.stem(word)
-                    stemmed_word_counts[stemmed_word] += count
-                word_counts = stemmed_word_counts
-            X_transformed.append(word_counts)
+			if self.lower_case:
+				text = text.lower()
+			if self.replace_urls and url_extractor is not None:
+			    urls = list(set(url_extractor.find_urls(text)))
+			    urls.sort(key=lambda url: len(url), reverse=True)
+			    for url in urls:
+			        text = text.replace(url, " URL ")
+			if self.replace_numbers:
+			    text = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', 'NUMBER', text)
+			if self.remove_punctuation:
+			    text = re.sub(r'\W+', ' ', text, flags=re.M)
+			word_counts = Counter(text.split())
+			if self.stemming and stemmer is not None:
+			    stemmed_word_counts = Counter()
+			    for word, count in word_counts.items():
+			        stemmed_word = stemmer.stem(word)
+			        stemmed_word_counts[stemmed_word] += count
+			    word_counts = stemmed_word_counts
+			X_transformed.append(word_counts)
 
-        return np.array(X_transformed)
+		return np.array(X_transformed)

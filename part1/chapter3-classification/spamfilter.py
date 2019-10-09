@@ -6,6 +6,8 @@ from email.parser import BytesParser
 from sklearn.model_selection import train_test_split
 import numpy as np
 
+from utils import EmailToWordCounterTransformer
+
 DOWNLOAD_ROOT = "http://spamassassin.apache.org/old/publiccorpus/"
 HAM_URL = DOWNLOAD_ROOT + "20030228_easy_ham.tar.bz2"
 SPAM_URL = DOWNLOAD_ROOT + "20030228_spam.tar.bz2"
@@ -28,7 +30,7 @@ def parse_email(filename, spam_path=SPAM_PATH, directory="spam"):
 	with open(os.path.join(spam_path, directory, filename), 'rb') as file:
 		return BytesParser(policy=email.policy.default).parse(file)
 
-#fetch_spam_data()
+fetch_spam_data()
 
 # loading spam and ham emails
 SPAM_DIR = os.path.join(SPAM_PATH, "spam")
