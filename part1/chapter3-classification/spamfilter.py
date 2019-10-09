@@ -1,6 +1,8 @@
 import os
 import tarfile
 from six.moves import urllib
+import email.policy
+from email.parser import BytesParser
 
 DOWNLOAD_ROOT = "http://spamassassin.apache.org/old/publiccorpus/"
 HAM_URL = DOWNLOAD_ROOT + "20030228_easy_ham.tar.bz2"
@@ -18,4 +20,20 @@ def fetch_spam_data(spam_url=SPAM_URL, spam_path=SPAM_PATH):
         tar_bz2_file.extractall(path=SPAM_PATH)
         tar_bz2_file.close()
 
+
+# function to parse an email
+def parse_email(filename, spam_path=SPAM_PATH, directory="spam"):
+	with open(os.path.join(spam_path, directory, filename), 'rb') as file:
+		return BytesParser(policy=email.policy.default).parse(file)
+
 fetch_spam_data()
+
+# loading spam and ham emails
+SPAM_DIR = os.path.join(SPAM_PATH, "spam")
+HAM_DIR = os.path.join(SPAM_PATH, "easy_ham")
+spam_filenames = [name for name in sorted(os.listdir(SPAM_DIR)) if len(name) > 20]
+ham_filenames = [name for name in sorted(os.listdir(HAM_DIR)) if len(name) > 20]
+
+# using the filenames to load the emails
+spam_emails = [parse_email(filename) for filename in spam_filenames]
+ham_emails = [parse_email(filename, directory="easy_ham") for filename in ham_filenames]
