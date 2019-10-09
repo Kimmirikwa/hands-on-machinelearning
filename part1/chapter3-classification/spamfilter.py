@@ -3,6 +3,8 @@ import tarfile
 from six.moves import urllib
 import email.policy
 from email.parser import BytesParser
+from sklearn.model_selection import train_test_split
+import numpy as np
 
 DOWNLOAD_ROOT = "http://spamassassin.apache.org/old/publiccorpus/"
 HAM_URL = DOWNLOAD_ROOT + "20030228_easy_ham.tar.bz2"
@@ -37,3 +39,9 @@ ham_filenames = [name for name in sorted(os.listdir(HAM_DIR)) if len(name) > 20]
 # using the filenames to load the emails
 spam_emails = [parse_email(filename) for filename in spam_filenames]
 ham_emails = [parse_email(filename, directory="easy_ham") for filename in ham_filenames]
+
+# splitting to training and testing dataset
+X = np.array(spam_emails + ham_emails)
+y = np.array([1] * len(spam_emails) + [0] * len(ham_emails))  # label for spam is '1' and '0' for non-spam
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
