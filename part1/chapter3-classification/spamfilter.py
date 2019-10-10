@@ -50,6 +50,7 @@ y = np.array([1] * len(spam_emails) + [0] * len(ham_emails))  # label for spam i
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 
 preprocess_pipeline = Pipeline([
-	("email_to_wordcount", EmailToWordCounterTransformer())])
+	("email_to_wordcount", EmailToWordCounterTransformer()),
+	("wordcount_to_vector", WordCounterToVectorTransformer())])
 
 X_train_trandformed = preprocess_pipeline.fit_transform(X_train)

@@ -88,7 +88,7 @@ class WordCounterToVectorTransformer(BaseEstimator, TransformerMixin):
 		self.vocabulary_ = {word: index + 1 for index, (word, count) in enumerate(most_common)}
 		return self
 
-	def transform(self):
+	def transform(self, X, y=None):
 		# we transfors the word counts to be a sparce matrix of most common words as columns
 		# and the instances as rows
 		rows = []
