@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 import numpy as np
 
-from utils import EmailToWordCounterTransformer
+from utils import EmailToWordCounterTransformer, WordCounterToVectorTransformer
 
 DOWNLOAD_ROOT = "http://spamassassin.apache.org/old/publiccorpus/"
 HAM_URL = DOWNLOAD_ROOT + "20030228_easy_ham.tar.bz2"

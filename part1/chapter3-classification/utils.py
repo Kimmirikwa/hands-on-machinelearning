@@ -1,10 +1,11 @@
 import re
 import urlextract
-import nltk
+import nltk  # natural language toolkit
 from collections import Counter
 from sklearn.base import BaseEstimator, TransformerMixin
 from html import unescape
 import numpy as np
+from scipy.sparse import csr_matrix
 
 def html_to_plain_text(html):
 	# will remove some tags and replace others
@@ -71,3 +72,31 @@ class EmailToWordCounterTransformer(BaseEstimator, TransformerMixin):
 			X_transformed.append(word_counts)
 
 		return np.array(X_transformed)
+
+class WordCounterToVectorTransformer(BaseEstimator, TransformerMixin):
+	def __init__(self, vocabulary_size=1000):
+		self.vocabulary_size = vocabulary_size
+
+	def fit(self, X, y=None):
+		# we get the words that are most common to be used as the vocabulary
+		total_count = Counter()
+		for word_count in X:
+		    for word, count in word_count.items():
+		        total_count[word] += min(count, 10)
+		most_common = total_count.most_common()[:self.vocabulary_size]  # the top 'vocabulary_size' words
+		self.most_common_ = most_common
+		self.vocabulary_ = {word: index + 1 for index, (word, count) in enumerate(most_common)}
+		return self
+
+	def transform(self):
+		# we transfors the word counts to be a sparce matrix of most common words as columns
+		# and the instances as rows
+		rows = []
+		cols = []
+		data = []
+		for row, word_count in enumerate(X):
+		    for word, count in word_count.items():
+		        rows.append(row)
+		        cols.append(self.vocabulary_.get(word, 0))
+		        data.append(count)
+		return csr_matrix((data, (rows, cols)), shape=(len(X), self.vocabulary_size + 1))
