@@ -39,3 +39,8 @@ def to_one_hot(y):
 	Y_one_hot = np.zeros((m, n_classes))
 	Y_one_hot[np.arange(m), y] = 1  # each row will have one column with a value 1
 	return Y_one_hot
+
+def softmax(logits):
+	exp = np.exp(logits)
+	exp_sums = np.sum(exp, axis=1, keepdims=True)
+	return exp / exp_sums

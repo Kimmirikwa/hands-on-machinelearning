@@ -18,3 +18,7 @@ X_train, X_test, X_validation, y_train, y_test, y_validation = custom_test_train
 y_train_one_hot = to_one_hot(y_train)
 y_test_one_hot = to_one_hot(y_test)
 y_validation_one_hot = to_one_hot(y_validation)
+
+# the size of the parameters
+n_inputs = X.train.shape[1]  # the number of the features plus bias term
+n_outputs = len(np.unique(y_train))  # the number of the classes
