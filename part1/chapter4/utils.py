@@ -49,6 +49,7 @@ def batch_gradient_descent(X_train, y_train, eta=0.01, n_iterations=5000, epsilo
 	# the size of the parameters
 	n_inputs = X_train.shape[1]  # the number of the features plus bias term
 	n_outputs = len(np.unique(y_train))  # the number of the classes
+	best_loss = np.infty
 
 	Theta = np.random.randn(n_inputs, n_outputs)  # the initial theta
 
@@ -64,6 +65,12 @@ def batch_gradient_descent(X_train, y_train, eta=0.01, n_iterations=5000, epsilo
 		error = y_proba - y_train_one_hot
 		if (iteration % 500 == 0):
 			print(iteration, loss)
+		if loss < best_loss:
+			best_loss = loss
+		else:
+			print(iteration - 1, best_loss)
+			print(iteration, loss, "early stopping!")
+			break
 		gradients = 1 / len(X_train) * X_train.T.dot(error)
 		if regularization:
 			gradients += np.r_[np.zeros([1, n_outputs]), alpha * Theta[1:]]

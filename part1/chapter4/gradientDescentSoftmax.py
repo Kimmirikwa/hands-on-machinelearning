@@ -20,13 +20,16 @@ y_test_one_hot = to_one_hot(y_test)
 y_validation_one_hot = to_one_hot(y_validation)
 
 def test_sgd(regularization=False):
-	theta = batch_gradient_descent(X_train, y_train)
+	theta = batch_gradient_descent(X_train, y_train, regularization=regularization)
 	logits = X_validation.dot(theta)
 	y_proba = softmax(logits)
-	y_predic = np.argmax(y_proba, axis=1)
-	accuracy_score = np.mean(y_predic == y_validation)
+	y_predict = np.argmax(y_proba, axis=1)
+	accuracy_score = np.mean(y_predict == y_validation)
 	print(accuracy_score)
 
 # without regularization
 test_sgd()  # 0.93333
+
+# with regression
+test_sgd(regularization=True)
 
