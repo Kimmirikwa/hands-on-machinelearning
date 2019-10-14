@@ -1,7 +1,7 @@
 from sklearn import datasets
 import numpy as np
 
-from utils import custom_test_train_split, to_one_hot, batch_gradient_descent
+from utils import custom_test_train_split, to_one_hot, batch_gradient_descent, softmax
 
 iris = datasets.load_iris()
 
@@ -19,5 +19,14 @@ y_train_one_hot = to_one_hot(y_train)
 y_test_one_hot = to_one_hot(y_test)
 y_validation_one_hot = to_one_hot(y_validation)
 
-theta = batch_gradient_descent(X_train, y_train)
+def test_sgd(regularization=False):
+	theta = batch_gradient_descent(X_train, y_train)
+	logits = X_validation.dot(theta)
+	y_proba = softmax(logits)
+	y_predic = np.argmax(y_proba, axis=1)
+	accuracy_score = np.mean(y_predic == y_validation)
+	print(accuracy_score)
+
+# without regularization
+test_sgd()  # 0.93333
 
