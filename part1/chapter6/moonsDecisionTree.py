@@ -51,3 +51,14 @@ for tree, (X_mini_train, y_mini_train) in zip(trees, mini_sets):
 
 # the score is lower because we have used less data to train the trees
 print("mean accuracy score for the forest: ", np.mean(accuracy_scores))  # 0.805326
+
+# doing majority-vote predictions over the test data
+# 1000 x len(X_test), each row will hold predictions for a tree for every training instance
+y_preds = np.empty([n_trees, len(X_test)], dtype=np.uint8)
+
+for tree_index, tree in enumerate(trees):
+	y_preds[tree_index] = tree.predict(X_test)
+
+y_pred_majority_votes, n_votes  = mode(y_preds, axis=0)  # finding the majority along each column i.e each test instance
+
+print("accuracy score for the majority vote classifier: ", accuracy_score(y_test, y_pred_majority_votes.reshape([-1])))  # 0.872
