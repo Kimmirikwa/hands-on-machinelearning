@@ -4,6 +4,7 @@ from sklearn.datasets import fetch_openml
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 from sklearn.manifold import LocallyLinearEmbedding, MDS
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.pipeline import Pipeline
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -37,9 +38,12 @@ def plot_digits(X, y, min_distance=0.05, images=None, figsize=(13, 10)):
                 imagebox = AnnotationBbox(OffsetImage(image, cmap="binary"), image_coord)
                 ax.add_artist(imagebox)
 
-def plot_2_dims(transformer, X, y, is_pipeline=False):
+def plot_2_dims(transformer, X, y, is_pipeline=False, fit_with_y=False):
 	t0 = time.time()
-	X_reduced = transformer.fit_transform(X)
+	if fit_with_y:
+		X_reduced = transformer.fit_transform(X, y)
+	else:
+		X_reduced = transformer.fit_transform(X)
 	t1 = time.time()
 	reducer_name = "+".join([type(step[1]).__name__ for step in transformer.get_params()['steps']]) if is_pipeline else type(transformer).__name__
 	print("{} took {:.1f}s (on {} MNIST images)".format(reducer_name, t1 - t0, len(X)))
@@ -56,13 +60,32 @@ random_indices = np.random.permutation(60000)
 X = X[random_indices]
 y = y[random_indices]
 
-plot_2_dims(PCA(n_components=2, random_state=42), X[:2000], y[:2000])
+plot_2_dims(PCA(n_components=2, random_state=42), X[:2000], y[:2000])  # 0.1s
 
-plot_2_dims(LocallyLinearEmbedding(n_components=2, random_state=42), X[:2000], y[:2000])
+plot_2_dims(LocallyLinearEmbedding(n_components=2, random_state=42), X[:2000], y[:2000])  # 12.8s
 
 plot_2_dims(MDS(n_components=2, random_state=42), X[:2000], y[:2000])
+
+plot_2_dims(LinearDiscriminantAnalysis(n_components=2), X[:2000], y[:2000], fit_with_y=True)
+
+plot_2_dims(TSNE(n_components=2, random_state=42), X[:2000], y[:2000])
 
 pca_lle = Pipeline([
 	("pca", PCA(n_components=2, random_state=42)),
 	("lle", LocallyLinearEmbedding(n_components=2, random_state=42))])
 plot_2_dims(pca_lle, X[:2000], y[:2000], is_pipeline=True)
+
+pca_mds = Pipeline([
+	("pca", PCA(n_components=2, random_state=42)),
+	("mds", MDS(n_components=2, random_state=42))])
+plot_2_dims(pca_mds, X[:2000], y[:2000], is_pipeline=True)
+
+pca_lda = Pipeline([
+	("pca", PCA(n_components=2, random_state=42)),
+	("lda", LinearDiscriminantAnalysis(n_components=2))])
+plot_2_dims(pca_lda, X[:2000], y[:2000], is_pipeline=True, fit_with_y=True)
+
+pca_tsne = Pipeline([
+	("pca", PCA(n_components=2, random_state=42)),
+	("tsne", TSNE(n_components=2, random_state=42))])
+plot_2_dims(pca_tsne, X[:2000], y[:2000], is_pipeline=True)
