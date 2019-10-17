@@ -35,6 +35,15 @@ def plot_digits(X, y, min_distance=0.05, images=None, figsize=(13, 10)):
                 imagebox = AnnotationBbox(OffsetImage(image, cmap="binary"), image_coord)
                 ax.add_artist(imagebox)
 
+def plot_2_dims(transformerClass, X):
+	transformer = transformerClass(n_components=2, random_state=42)
+	t0 = time.time()
+	X_reduced = transformer.fit_transform(X)
+	t1 = time.time()
+	print("{} took {:.1f}s.".format(transformer.__class__.__name__, t1 - t0))
+	plot_digits(X_reduced, y, images=X, figsize=(35, 25))
+	plt.show()
+
 mnist = fetch_openml("mnist_784")
 
 X = mnist['data']
@@ -50,9 +59,4 @@ y = y[random_indices]
 # tsne = TSNE(n_components=2, random_state=42)
 # X_reduced = tsne.fit_transform(X)
 
-t0 = time.time()
-X_pca_reduced = PCA(n_components=2, random_state=42).fit_transform(X)
-t1 = time.time()
-print("PCA took {:.1f}s.".format(t1 - t0))
-plot_digits(X_pca_reduced, y, images=X, figsize=(35, 25))
-plt.show()
+plot_2_dims(PCA, X)
