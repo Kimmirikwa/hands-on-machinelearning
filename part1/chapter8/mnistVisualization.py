@@ -62,30 +62,30 @@ y = y[random_indices]
 
 plot_2_dims(PCA(n_components=2, random_state=42), X[:2000], y[:2000])  # 0.1s
 
-plot_2_dims(LocallyLinearEmbedding(n_components=2, random_state=42), X[:2000], y[:2000])  # 12.8s
+plot_2_dims(LocallyLinearEmbedding(n_components=2, random_state=42), X[:2000], y[:2000])  # 12.6s
 
-plot_2_dims(MDS(n_components=2, random_state=42), X[:2000], y[:2000])
+plot_2_dims(MDS(n_components=2, random_state=42), X[:2000], y[:2000])  # 365.3s
 
-plot_2_dims(LinearDiscriminantAnalysis(n_components=2), X[:2000], y[:2000], fit_with_y=True)
+plot_2_dims(LinearDiscriminantAnalysis(n_components=2), X[:2000], y[:2000], fit_with_y=True)  # 1.6s
 
-plot_2_dims(TSNE(n_components=2, random_state=42), X[:2000], y[:2000])
+plot_2_dims(TSNE(n_components=2, random_state=42), X[:2000], y[:2000])  # 45.2s
 
 pca_lle = Pipeline([
 	("pca", PCA(n_components=2, random_state=42)),
 	("lle", LocallyLinearEmbedding(n_components=2, random_state=42))])
-plot_2_dims(pca_lle, X[:2000], y[:2000], is_pipeline=True)
+plot_2_dims(pca_lle, X[:2000], y[:2000], is_pipeline=True)  # 0.9s
 
 pca_mds = Pipeline([
 	("pca", PCA(n_components=2, random_state=42)),
 	("mds", MDS(n_components=2, random_state=42))])
-plot_2_dims(pca_mds, X[:2000], y[:2000], is_pipeline=True)
+plot_2_dims(pca_mds, X[:2000], y[:2000], is_pipeline=True)  # 174.2s
 
 pca_lda = Pipeline([
 	("pca", PCA(n_components=2, random_state=42)),
 	("lda", LinearDiscriminantAnalysis(n_components=2))])
-plot_2_dims(pca_lda, X[:2000], y[:2000], is_pipeline=True, fit_with_y=True)
+plot_2_dims(pca_lda, X[:2000], y[:2000], is_pipeline=True, fit_with_y=True)  # 0.1s
 
 pca_tsne = Pipeline([
 	("pca", PCA(n_components=2, random_state=42)),
 	("tsne", TSNE(n_components=2, random_state=42))])
-plot_2_dims(pca_tsne, X[:2000], y[:2000], is_pipeline=True)
+plot_2_dims(pca_tsne, X[:2000], y[:2000], is_pipeline=True)  # 17.6s
