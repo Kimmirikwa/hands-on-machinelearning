@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, VotingClassifier
@@ -19,13 +20,20 @@ svc_clf = LinearSVC(random_state=42)
 mlp_clf = MLPClassifier(random_state=42)
 
 estimators = [
+	forest_clf,
+	extra_trees_clf,
+	svc_clf,
+	mlp_clf
+]
+
+named_estimators = [
 	("forest_clf", forest_clf),
 	("extra_trees_clf", extra_trees_clf),
 	("svc_clf", svc_clf),
 	("mlp_clf", mlp_clf)
 ]
 
-voting_clf = VotingClassifier(estimators)
+voting_clf = VotingClassifier(named_estimators)
 voting_clf.fit(X_train, y_train)
 voting_clf.score(X_validation, y_validation)
 
@@ -33,3 +41,9 @@ voting_clf.score(X_validation, y_validation)
 # no need to train the model again
 voting_clf.voting = "soft"
 voting_clf.score(X_test, y_test)
+
+# stacking ensemble
+X_validation_predictions = np.empty((len(X_validation), len(estimators)), dtype=np.float)
+
+for index, estimator in enumerate(estimators):
+	X_validation_predictions[:, index] = estimator.predict(X_validation)
