@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.datasets import fetch_openml
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
+from sklearn.manifold import LocallyLinearEmbedding
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from sklearn.preprocessing import MinMaxScaler
@@ -35,7 +36,7 @@ def plot_digits(X, y, min_distance=0.05, images=None, figsize=(13, 10)):
                 imagebox = AnnotationBbox(OffsetImage(image, cmap="binary"), image_coord)
                 ax.add_artist(imagebox)
 
-def plot_2_dims(transformerClass, X):
+def plot_2_dims(transformerClass, X, y):
 	transformer = transformerClass(n_components=2, random_state=42)
 	t0 = time.time()
 	X_reduced = transformer.fit_transform(X)
@@ -56,7 +57,5 @@ random_indices = np.random.permutation(60000)[:m]
 X = X[random_indices]
 y = y[random_indices]
 
-# tsne = TSNE(n_components=2, random_state=42)
-# X_reduced = tsne.fit_transform(X)
-
-plot_2_dims(PCA, X)
+plot_2_dims(PCA, X[:10000], y[:10000])
+plot_2_dims(LocallyLinearEmbedding, X[:2000], y[:2000])
