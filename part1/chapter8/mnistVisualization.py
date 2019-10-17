@@ -1,6 +1,8 @@
+import time
 import numpy as np
 from sklearn.datasets import fetch_openml
 from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from sklearn.preprocessing import MinMaxScaler
@@ -18,7 +20,7 @@ def plot_digits(X, y, min_distance=0.05, images=None, figsize=(13, 10)):
     cmap = cm.get_cmap("jet")
     digits = np.unique(y)
     for digit in digits:
-        plt.scatter(X_normalized[y == digit, 0], X_normalized[y == digit, 1], c=[cmap(digit / 9)])
+    	plt.scatter(X_normalized[y == digit, 0], X_normalized[y == digit, 1], c=[cmap(int(digit) / 9)])
     plt.axis("off")
     ax = plt.gcf().gca()  # get current axes in current figure
     for index, image_coord in enumerate(X_normalized):
@@ -27,7 +29,7 @@ def plot_digits(X, y, min_distance=0.05, images=None, figsize=(13, 10)):
             neighbors = np.r_[neighbors, [image_coord]]
             if images is None:
                 plt.text(image_coord[0], image_coord[1], str(int(y[index])),
-                         color=cmap(y[index] / 9), fontdict={"weight": "bold", "size": 16})
+                         color=cmap(int(y[index]) / 9), fontdict={"weight": "bold", "size": 16})
             else:
                 image = images[index].reshape(28, 28)
                 imagebox = AnnotationBbox(OffsetImage(image, cmap="binary"), image_coord)
@@ -45,5 +47,12 @@ random_indices = np.random.permutation(60000)[:m]
 X = X[random_indices]
 y = y[random_indices]
 
-tsne = TSNE(n_components=2, random_state=42)
-X_reduced = tsne.fit_transform(X)
+# tsne = TSNE(n_components=2, random_state=42)
+# X_reduced = tsne.fit_transform(X)
+
+t0 = time.time()
+X_pca_reduced = PCA(n_components=2, random_state=42).fit_transform(X)
+t1 = time.time()
+print("PCA took {:.1f}s.".format(t1 - t0))
+plot_digits(X_pca_reduced, y, images=X, figsize=(35, 25))
+plt.show()
