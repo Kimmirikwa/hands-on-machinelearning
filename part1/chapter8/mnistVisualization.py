@@ -10,13 +10,6 @@ from matplotlib import cm
 from sklearn.preprocessing import MinMaxScaler
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 
-class ReducePipeline(Pipeline):
-	def init(self, reducers):
-		self.reducers = reducers
-
-	def __str__(self):
-		return "+".join([reducer[1] for reducer in self.reducers])
-
 def plot_digits(X, y, min_distance=0.05, images=None, figsize=(13, 10)):
     # Let's scale the input features so that they range from 0 to 1
     X_normalized = MinMaxScaler().fit_transform(X)
@@ -48,7 +41,8 @@ def plot_2_dims(transformer, X, y, is_pipeline=False):
 	t0 = time.time()
 	X_reduced = transformer.fit_transform(X)
 	t1 = time.time()
-	print("{} took {:.1f}s (on {} MNIST images)".format(transformer if is_pipeline else type(transformer).__name__, t1 - t0, len(X)))
+	reducer_name = "+".join([type(step[1]).__name__ for step in transformer.get_params()['steps']]) if is_pipeline else type(transformer).__name__
+	print("{} took {:.1f}s (on {} MNIST images)".format(reducer_name, t1 - t0, len(X)))
 	plot_digits(X_reduced, y, images=X, figsize=(35, 25))
 	plt.show()
 
@@ -57,7 +51,6 @@ mnist = fetch_openml("mnist_784")
 X = mnist['data']
 y = mnist['target']
 
-# randomly selecting 10000 digits to speed up dimension reduction
 random_indices = np.random.permutation(60000)
 
 X = X[random_indices]
@@ -69,7 +62,7 @@ plot_2_dims(LocallyLinearEmbedding(n_components=2, random_state=42), X[:2000], y
 
 plot_2_dims(MDS(n_components=2, random_state=42), X[:2000], y[:2000])
 
-pca_lle = ReducePipeline([
+pca_lle = Pipeline([
 	("pca", PCA(n_components=2, random_state=42)),
 	("lle", LocallyLinearEmbedding(n_components=2, random_state=42))])
 plot_2_dims(pca_lle, X[:2000], y[:2000], is_pipeline=True)
