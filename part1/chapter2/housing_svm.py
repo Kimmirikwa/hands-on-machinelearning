@@ -31,15 +31,15 @@ numerical_attributes = train_set.drop(['ocean_proximity', 'median_house_value'],
 numerical_pipeline = Pipeline([
 	('selector', DataFrameSelector(numerical_attributes)),  # selects only numerical attributes
 	('imputer', SimpleImputer(strategy='median')),  # replace missing values using the median along each column
-	('attrs_addeder', CombinedAttributesAdder()),
-	('scaler', StandardScaler())])
+	('attrs_addeder', CombinedAttributesAdder()),  # feature creation
+	('scaler', StandardScaler())])  # scaling the data, if not the model will concetrate on proportionately larger features
 
 # pipeline to preprocess categorical features
 categorical_attribute = ["ocean_proximity"]
 
 categorical_pipeline = Pipeline([
-	('selector', DataFrameSelector(categorical_attribute)),
-	('label_binarizer', CustomLabelBinarizer())])
+	('selector', DataFrameSelector(categorical_attribute)),  # selects only categorical feature i.e "ocean proximity"
+	('label_binarizer', CustomLabelBinarizer())])  # converts categorical feature to numerical
 
 # get the labels of the dataset
 housing_labels = ["median_house_value"]

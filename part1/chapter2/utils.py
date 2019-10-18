@@ -38,7 +38,9 @@ class DataFrameSelector(BaseEstimator, TransformerMixin):
 		return X[self.attribute_names].values
 
 class CustomLabelBinarizer(BaseEstimator, TransformerMixin):
-	'''LabelBinarizer that can handle 3 positional arguments'''
+	'''
+		encodes categorical feature to numerical by use of one-hot-encoding
+	'''
 	def __init__(self):
 		self.encoder = LabelBinarizer()
 
