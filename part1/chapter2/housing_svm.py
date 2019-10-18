@@ -2,10 +2,12 @@
 	prediction of the housing median prices using support vector machine
 	This is the solution to the exercise of the second chapter
 '''
+import time
 import pandas as pd
 import numpy as np
 from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.preprocessing import StandardScaler, Imputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.svm import SVR
 
@@ -28,7 +30,7 @@ numerical_attributes = train_set.drop(['ocean_proximity', 'median_house_value'],
 
 numerical_pipeline = Pipeline([
 	('selector', DataFrameSelector(numerical_attributes)),
-	('imputer', Imputer(strategy='median')),
+	('imputer', SimpleImputer(strategy='median')),
 	('attrs_addeder', CombinedAttributesAdder()),
 	('scaler', StandardScaler())])
 
@@ -54,12 +56,16 @@ prepared_data = full_dataprep_pipeline.fit_transform(housing)
 
 param_grid = {
 	'kernel': ['linear', 'rbf'],
-	'C': [1.0, 2.0, 3.0, 4.0, 5.0],
-	'gamma': [1.0, 2.0, 3.0, 4.0, 5.0]
+	'C': [1, 2, 3],
+	'gamma': [1, 2, 3]
 }
 
 svm = SVR()
 
-randomized_search = RandomizedSearchCV(svm, param_grid, cv=5, scoring='neg_mean_squared_error')
 
+randomized_search = RandomizedSearchCV(svm, param_grid, cv=3, scoring='neg_mean_squared_error')
+
+start = time.time()
 randomized_search.fit(prepared_data, housing_data_labels)
+end = time.time()
+print("time taken: ", end - start)
