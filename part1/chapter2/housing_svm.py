@@ -20,7 +20,7 @@ housing = get_data()
 # split into train_set and test_set
 train_set, test_set = split_data(housing)
 
-housing = train_set.drop("median_house_value", axis=1)
+housing = train_set.drop("median_house_value", axis=1)  # median_house_value column contains the target values
 housing_data_labels = train_set["median_house_value"].copy()
 
 # data preparation and prediction going to be done in a pipeline
@@ -29,8 +29,8 @@ housing_data_labels = train_set["median_house_value"].copy()
 numerical_attributes = train_set.drop(['ocean_proximity', 'median_house_value'], axis=1).columns
 
 numerical_pipeline = Pipeline([
-	('selector', DataFrameSelector(numerical_attributes)),
-	('imputer', SimpleImputer(strategy='median')),
+	('selector', DataFrameSelector(numerical_attributes)),  # selects only numerical attributes
+	('imputer', SimpleImputer(strategy='median')),  # replace missing values using the median along each column
 	('attrs_addeder', CombinedAttributesAdder()),
 	('scaler', StandardScaler())])
 
@@ -65,6 +65,7 @@ svm = SVR()
 
 randomized_search = RandomizedSearchCV(svm, param_grid, cv=3, scoring='neg_mean_squared_error')
 
+print("started training>>>>>>>>>>")
 start = time.time()
 randomized_search.fit(prepared_data, housing_data_labels)
 end = time.time()

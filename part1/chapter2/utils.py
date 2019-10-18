@@ -5,7 +5,12 @@ from sklearn.preprocessing import LabelBinarizer
 rooms_ix, bedrooms_ix, population_ix, household_ix = 3, 4, 5, 6
 
 class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
-	'''transformer class that adds the combined CombinedAttributesAdder'''
+	'''
+		transformer class that adds attributes to the dataset - feature engineering
+		at the moment we only add 'bedrooms_per_room'
+		we can add more than one feature and use grid search or randomized search
+		to select the most appropriate features to add
+	'''
 	def __init__(self, add_bedrooms_per_room=True):
 		self.add_bedrooms_per_room = add_bedrooms_per_room
 
