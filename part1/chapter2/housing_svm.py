@@ -81,6 +81,7 @@ best_estimator = randomized_search.best_estimator_
 
 # preparing test data before feeding to the trained model
 prepared_test_data = full_dataprep_pipeline.fit_transform(housing_test)
+
 housing_predicted_labels = best_estimator.predict(prepared_test_data)
 mse = mean_squared_error(housing_test_labels, housing_predicted_labels)
 print("root mean squared error: ", np.sqrt(mse))
